@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peblum, a fully open source fork of PebbleOS</title>
+<meta name="description" content="Peblum is a fully open source fork of PebbleOS for Pebble smartwatches, with an ecosystem of open source apps. Currently in alpha.">
+<meta property="og:title" content="Peblum">
+<meta property="og:description" content="A fully open source fork of PebbleOS, with an ecosystem of open source apps. Currently in alpha.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://peblum.org/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23e8623a'/%3E%3Cellipse cx='16' cy='17' rx='9' ry='7' fill='%23fff'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #fbfaf8;
+    --surface: #ffffff;
+    --border: #e2ded7;
+    --text: #1c1a17;
+    --muted: #61594f;
+    --accent: #c8501f;
+    --accent-soft: #fdeee7;
+    --shadow: 0 1px 2px rgba(28,26,23,.05), 0 8px 24px -12px rgba(28,26,23,.18);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14130f;
+      --surface: #1d1b17;
+      --border: #322e28;
+      --text: #f2efe9;
+      --muted: #a49a8c;
+      --accent: #ff8352;
+      --accent-soft: #2a1a12;
+      --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.65 ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); }
+  .wrap { width: min(100% - 2.5rem, 62rem); margin-inline: auto; }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: saturate(180%) blur(12px);
+    z-index: 10;
+  }
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .85rem 0; }
+  .brand { display: flex; align-items: center; gap: .6rem; font-weight: 650; letter-spacing: -.015em; font-size: 1.05rem; color: var(--text); text-decoration: none; }
+  .mark { width: 26px; height: 26px; border-radius: 7px; background: var(--accent); display: grid; place-items: center; flex: none; }
+  .mark::after { content: ""; width: 15px; height: 11px; border-radius: 50%; background: var(--bg); }
+  nav { display: flex; gap: 1.25rem; align-items: center; font-size: .93rem; }
+  nav a { color: var(--muted); text-decoration: none; }
+  nav a:hover { color: var(--text); }
+
+  .hero { padding: 4.5rem 0 3.25rem; }
+  .pill {
+    display: inline-flex; align-items: center; gap: .5rem;
+    background: var(--accent-soft); color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+    padding: .3rem .7rem; border-radius: 999px;
+    font-size: .8rem; font-weight: 600; letter-spacing: .01em;
+  }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  h1 {
+    font-size: clamp(2.4rem, 7vw, 4rem);
+    line-height: 1.04; letter-spacing: -.035em;
+    margin: 1.15rem 0 0; font-weight: 700;
+  }
+  .lede { font-size: clamp(1.05rem, 2.4vw, 1.3rem); color: var(--muted); max-width: 34rem; margin: 1.1rem 0 0; }
+  .cta { display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 2rem; }
+  .btn {
+    display: inline-flex; align-items: center; gap: .5rem;
+    padding: .68rem 1.15rem; border-radius: 9px;
+    font-size: .95rem; font-weight: 560; text-decoration: none;
+    border: 1px solid transparent; transition: transform .06s ease;
+  }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+
+  section { padding: 3.25rem 0; border-top: 1px solid var(--border); }
+  h2 { font-size: 1.45rem; letter-spacing: -.02em; margin: 0 0 .6rem; font-weight: 660; }
+  .sub { color: var(--muted); margin: 0 0 1.9rem; max-width: 40rem; }
+
+  .note {
+    display: grid; grid-template-columns: auto 1fr; gap: .9rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 1.1rem 1.25rem; border-radius: 10px; box-shadow: var(--shadow);
+  }
+  .note strong { display: block; margin-bottom: .2rem; }
+  .note p { margin: 0; color: var(--muted); font-size: .95rem; }
+  .note .icon { color: var(--accent); font-weight: 700; }
+
+  .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 1.35rem; box-shadow: var(--shadow);
+    display: flex; flex-direction: column; text-decoration: none; color: inherit;
+  }
+  .card:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+  .card h3 { margin: 0 0 .4rem; font-size: 1.03rem; font-weight: 620; letter-spacing: -.01em; }
+  .card p { margin: 0 0 1rem; color: var(--muted); font-size: .93rem; flex: 1; }
+  .tags { display: flex; gap: .4rem; flex-wrap: wrap; }
+  .tag {
+    font-size: .72rem; font-weight: 600; letter-spacing: .02em;
+    color: var(--muted); border: 1px solid var(--border);
+    padding: .16rem .5rem; border-radius: 5px;
+  }
+
+  ul.plain { list-style: none; padding: 0; margin: 0; display: grid; gap: .85rem; }
+  ul.plain li { display: grid; grid-template-columns: auto 1fr; gap: .7rem; align-items: start; color: var(--muted); }
+  ul.plain b { color: var(--text); font-weight: 600; }
+  .check { color: var(--accent); font-weight: 700; line-height: 1.5; }
+
+  footer { border-top: 1px solid var(--border); padding: 2.25rem 0 3rem; color: var(--muted); font-size: .9rem; }
+  .foot { display: flex; flex-wrap: wrap; gap: 1rem 1.75rem; justify-content: space-between; align-items: center; }
+  footer a { color: var(--muted); }
+  .disclaimer { margin-top: 1.25rem; font-size: .82rem; max-width: 46rem; opacity: .85; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="/"><span class="mark"></span>Peblum</a>
+    <nav>
+      <a href="#ecosystem">Ecosystem</a>
+      <a href="#open">Open source</a>
+      <a href="https://github.com/peblum">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="wrap hero">
+    <span class="pill"><span class="dot"></span>Alpha</span>
+    <h1>A fully open source watch OS for Pebble.</h1>
+    <p class="lede">Peblum is a fork of PebbleOS that keeps the whole stack open, from the firmware on your wrist to the app on your phone.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/peblum/Peblum">Firmware source</a>
+      <a class="btn btn-secondary" href="https://github.com/peblum">Browse the org</a>
+    </div>
+  </div>
+
+  <section class="wrap">
+    <div class="note">
+      <span class="icon">!</span>
+      <div>
+        <strong>Peblum is in alpha.</strong>
+        <p>It is under active development and is not ready to be your daily watch firmware yet. Expect rough edges, incomplete features, and changes that break things. If you flash it, do so knowing that.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" id="why">
+    <h2>Why a fork</h2>
+    <p class="sub">PebbleOS is open source, but the ecosystem around it is not entirely. Peblum exists to close that gap and to keep useful work moving.</p>
+    <ul class="plain">
+      <li><span class="check">&rarr;</span><span><b>Open all the way down.</b> Replace the proprietary pieces of the stack with open ones, so the firmware and the companion app can be built and audited by anyone.</span></li>
+      <li><span class="check">&rarr;</span><span><b>Battery life you control.</b> Charge limiting keeps the battery off a full charge, which is the single biggest thing you can do for its lifespan.</span></li>
+      <li><span class="check">&rarr;</span><span><b>Nothing you cannot rebuild.</b> Every part of Peblum is source you can read, change, and ship yourself.</span></li>
+    </ul>
+  </section>
+
+  <section class="wrap" id="ecosystem">
+    <h2>The ecosystem</h2>
+    <p class="sub">The firmware is the foundation. These are open source apps and companions built around it.</p>
+    <div class="grid">
+      <a class="card" href="https://github.com/peblum/Peblum">
+        <h3>Peblum firmware</h3>
+        <p>The watch operating system itself, forked from PebbleOS and tracking it upstream.</p>
+        <div class="tags"><span class="tag">EUPL-1.2</span><span class="tag">C</span></div>
+      </a>
+      <a class="card" href="https://github.com/peblum/mobileapp">
+        <h3>Companion app</h3>
+        <p>The phone app that pairs with the watch, being stripped of its proprietary dependencies and prepared for F-Droid.</p>
+        <div class="tags"><span class="tag">GPL-3.0</span><span class="tag">Kotlin</span></div>
+      </a>
+      <a class="card" href="https://github.com/peblum/maps-for-pebble">
+        <h3>Maps</h3>
+        <p>Walking and cycling directions on the watch, with a small map of where you are and where the next turn is.</p>
+        <div class="tags"><span class="tag">MIT</span><span class="tag">Kotlin</span></div>
+      </a>
+      <a class="card" href="https://github.com/peblum/claude-for-pebble">
+        <h3>Claude for Pebble</h3>
+        <p>A Claude AI client that runs on the watch, so you can ask a question from your wrist.</p>
+        <div class="tags"><span class="tag">Unlicense</span><span class="tag">C</span></div>
+      </a>
+    </div>
+  </section>
+
+  <section class="wrap" id="open">
+    <h2>Open source, in the licence too</h2>
+    <p class="sub">The firmware is licensed under the European Union Public Licence v1.2, a copyleft licence that keeps derivatives open. Code inherited from upstream PebbleOS stays under its original Apache 2.0 terms, and third party components keep their own licences.</p>
+    <div class="cta">
+      <a class="btn btn-secondary" href="https://github.com/peblum/Peblum/blob/main/LICENSE">Read the licence</a>
+      <a class="btn btn-secondary" href="https://github.com/peblum/Peblum/issues">Open issues</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <span>Peblum, an independent open source project.</span>
+      <span><a href="https://github.com/peblum">GitHub</a> &nbsp;&middot;&nbsp; <a href="https://github.com/coredevices/PebbleOS">Upstream PebbleOS</a></span>
+    </div>
+    <p class="disclaimer">Peblum is not affiliated with, endorsed by, or sponsored by Core Devices. Pebble is a trademark of its respective owner. This is a community fork maintained independently.</p>
+  </div>
+</footer>
+
+</body>
+</html>
