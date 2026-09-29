@@ -98,7 +98,8 @@
   }
   .note strong { display: block; margin-bottom: .2rem; }
   .note p { margin: 0; color: var(--muted); font-size: .95rem; }
-  .note .icon { color: var(--accent); font-weight: 700; }
+  .note .icon { color: var(--accent); font-weight: 700; width: .75rem; text-align: center; }
+  .notes { display: grid; gap: 1rem; }
 
   .grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
   .card {
@@ -151,12 +152,19 @@
     </div>
   </div>
 
-  <section class="wrap">
+  <section class="wrap notes">
+    <div class="note">
+      <span class="icon">?</span>
+      <div>
+        <strong>Peblum is looking for maintainers.</strong>
+        <p>The firmware and the apps around it need new maintainers. If you would like to help maintain one of them or take it over, <a href="https://github.com/peblum/Peblum/issues/new">open an issue</a>.</p>
+      </div>
+    </div>
     <div class="note">
       <span class="icon">!</span>
       <div>
         <strong>Peblum is in alpha.</strong>
-        <p>It is under active development and is not ready to be your daily watch firmware yet. Expect rough edges, incomplete features, and changes that break things. If you flash it, do so knowing that.</p>
+        <p>It is not ready to be your daily watch firmware yet. Expect rough edges, incomplete features, and changes that break things. If you flash it, do so knowing that.</p>
       </div>
     </div>
   </section>
